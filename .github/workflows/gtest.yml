@@ -1,0 +1,32 @@
+name: gtest run
+
+on:
+  push:
+    branches: [ master, ci-update ]
+  pull_request:
+    branches: [ master, ci-update ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: install gtest
+      run: |
+        curl -L -o gtest.tar.gz https://github.com/google/googletest/archive/refs/tags/release-1.12.1.tar.gz
+        tar zxvf gtest.tar.gz
+
+    - name: configure
+      run: ./configure --with-gtest-source=${{ github.workspace }}/googletest-release-1.12.1
+
+    - name: make
+      run: make -j2
+
+    - name: make check
+      run: make check
+
+    - name: make distcheck
+      run: make distcheck
